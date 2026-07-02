@@ -186,7 +186,13 @@ footer{padding:3rem 0;border-top:0.5px solid rgba(201,168,76,0.1);text-align:cen
 .aabtn.del:hover{border-color:#c0392b;color:#e74c3c;}
 .aphoto-name{padding:0.4rem;font-size:0.6rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
-/* INSTALL BANNER */
+/* INTRO VIDEO */
+.intro-screen{position:fixed;inset:0;z-index:9998;background:#000;display:flex;align-items:center;justify-content:center;}
+.intro-screen.hidden{display:none;}
+.intro-screen video{width:100%;height:100%;object-fit:cover;}
+.intro-skip{position:absolute;bottom:2rem;right:2rem;background:transparent;border:1px solid rgba(201,168,76,0.5);color:var(--gold);padding:0.6rem 1.5rem;font-family:'Cormorant Garamond',serif;font-size:0.8rem;letter-spacing:0.3em;text-transform:uppercase;cursor:pointer;transition:all 0.3s;}
+.intro-skip:hover{background:var(--gold);color:var(--black);}
+.intro-progress{position:absolute;bottom:0;left:0;height:2px;background:var(--gold);width:0;transition:width 0.1s linear;}
 .install-banner{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:linear-gradient(135deg,#1A1812,#221E14);border-top:1px solid rgba(201,168,76,0.3);padding:1rem 1.5rem;display:none;align-items:center;gap:1rem;}
 .install-banner.show{display:flex;}
 .install-banner-icon{width:48px;height:48px;border-radius:10px;overflow:hidden;flex-shrink:0;}
@@ -243,6 +249,15 @@ footer{padding:3rem 0;border-top:0.5px solid rgba(201,168,76,0.1);text-align:cen
 </style>
 </head>
 <body>
+
+<!-- INTRO VIDEO -->
+<div class="intro-screen" id="introScreen">
+  <video id="introVideo" playsinline autoplay muted>
+    <source src="https://res.cloudinary.com/dmi9wex76/video/upload/v1783020342/MicrosoftTeams-video_1_yxivon.mp4" type="video/mp4">
+  </video>
+  <div class="intro-progress" id="introProgress"></div>
+  <button class="intro-skip" onclick="closeIntro()">Saltar ›</button>
+</div>
 
 <!-- INSTALL BANNER -->
 <div class="install-banner" id="installBanner">
@@ -493,6 +508,25 @@ footer{padding:3rem 0;border-top:0.5px solid rgba(201,168,76,0.1);text-align:cen
 </div>
 
 <script>
+// ── INTRO VIDEO ──
+function closeIntro(){
+  var s=document.getElementById('introScreen');
+  s.style.opacity='0';
+  s.style.transition='opacity 0.8s';
+  setTimeout(function(){s.classList.add('hidden');},800);
+}
+var iv=document.getElementById('introVideo');
+iv.addEventListener('ended',closeIntro);
+iv.addEventListener('timeupdate',function(){
+  if(!iv.duration)return;
+  var pct=(iv.currentTime/iv.duration)*100;
+  document.getElementById('introProgress').style.width=pct+'%';
+});
+// Unmute al tocar pantalla (iOS requiere interacción)
+document.getElementById('introScreen').addEventListener('click',function(){
+  if(iv.muted){iv.muted=false;iv.volume=1;}
+});
+
 // ── Toast ──
 function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
 
